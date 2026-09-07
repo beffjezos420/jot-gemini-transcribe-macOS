@@ -181,7 +181,7 @@ public struct GeminiTranscriptionService: TranscriptionServicing {
             case .network, .timeout:
                 // One silent retry for transient classes (audio is safe on disk).
                 Log.transcription.info("transcribe retrying after \(String(describing: error), privacy: .public)")
-                try await Task.sleep(nanoseconds: 500_000_000)
+                try await Task.sleep(nanoseconds: UInt64(TimeoutPolicy.transcribeRetryDelay * 1_000_000_000))
                 return try await sendTranscribe(
                     flacData: flacData, config: config, policy: policy,
                     vocabulary: vocabulary, deadline: deadline
