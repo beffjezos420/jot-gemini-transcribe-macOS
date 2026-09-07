@@ -31,6 +31,11 @@ public enum TimeoutPolicy {
     /// When the HUD flips to the "Still working…" slow state.
     public static let slowStateUI: TimeInterval = 3
 
+    /// How long to wait before retrying a transient failure (network/timeout).
+    /// Single silent retry — audio is safe on disk, so this delay is just about
+    /// giving the transport a moment to recover before the next attempt.
+    public static let transcribeRetryDelay: TimeInterval = 0.5
+
     /// Overall per-request deadline. Scales gently with audio length:
     /// 5s clip → 31s; 10min clip → 2.5min. Never the unbounded 2×duration formula.
     public static func overallDeadline(audioDuration: TimeInterval) -> TimeInterval {

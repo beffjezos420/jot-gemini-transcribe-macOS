@@ -26,4 +26,11 @@ final class TimeoutPolicyTests: XCTestCase {
     func testSlowStateFiresWellBeforeFirstByteDeadline() {
         XCTAssertLessThan(TimeoutPolicy.slowStateUI, TimeoutPolicy.timeToFirstByte)
     }
+
+    func testTranscribeRetryDelayIsReasonable() {
+        // The retry delay should be short enough that the user doesn't wait long,
+        // but long enough to let a transient network glitch recover.
+        XCTAssertGreaterThan(TimeoutPolicy.transcribeRetryDelay, 0.1)
+        XCTAssertLessThan(TimeoutPolicy.transcribeRetryDelay, 3.0)
+    }
 }
