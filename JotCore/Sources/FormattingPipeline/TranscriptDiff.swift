@@ -84,7 +84,7 @@ public enum TranscriptDiff {
         let raw: String
         /// Lowercased and stripped of punctuation, for comparison only. Smart
         /// mode adds punctuation and capitalisation, so comparing raw text would
-        /// mark every word as cut.
+        /// mark every word as removed.
         let key: String
     }
 
@@ -104,6 +104,10 @@ public enum TranscriptDiff {
                     } else if var last = tokens.popLast() {
                         last = Token(raw: last.raw + trailing, key: last.key)
                         tokens.append(last)
+                    } else {
+                        // Leading whitespace before any token: attach it to the
+                        // coming word so it is preserved in the token's raw.
+                        word = String(trailing)
                     }
                     trailing = ""
                 }
