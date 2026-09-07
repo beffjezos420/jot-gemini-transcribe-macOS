@@ -57,6 +57,17 @@ public enum AudioLevelCurve {
         return max(floorDBFS, 20 * log10(Double(linear)))
     }
 
+    /// dBFS → Jot level. The inverse of `dBFS(fromLevel:)` — useful when a
+    /// threshold is specified in dB (e.g. from the noise-floor estimator) and
+    /// must be compared against the level stream.
+    ///
+    /// Below `floorDBFS` this returns 0; at or above 0 dBFS it saturates at 1.0.
+    public static func level(fromDBFS dbfs: Double) -> Float {
+        let clamped = max(floorDBFS, min(0, dbfs))
+        let linear = pow(10, clamped / 20.0)
+        return level(fromRMS: Float(linear))
+    }
+
     /// Where the curve stops distinguishing louder from loudest (≈ −20.8 dBFS).
     public static var saturationDBFS: Double { 20 * log10(1 / Double(gain)) }
 }
