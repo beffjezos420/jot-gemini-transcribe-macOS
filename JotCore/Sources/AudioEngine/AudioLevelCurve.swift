@@ -63,7 +63,8 @@ public enum AudioLevelCurve {
     ///
     /// Below `floorDBFS` this returns 0; at or above 0 dBFS it saturates at 1.0.
     public static func level(fromDBFS dbfs: Double) -> Float {
-        let clamped = max(floorDBFS, min(0, dbfs))
+        guard dbfs > floorDBFS else { return 0 }
+        let clamped = min(0, dbfs)
         let linear = pow(10, clamped / 20.0)
         return level(fromRMS: Float(linear))
     }
