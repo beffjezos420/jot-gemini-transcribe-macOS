@@ -64,4 +64,32 @@ final class AudioLevelCurveTests: XCTestCase {
             previous = level
         }
     }
+
+    // MARK: dBFS → level
+
+    func testLevelFromDBFSRoundTrips() {
+        for level in [Float(0.01), 0.06, 0.08, 0.25, 0.5, 0.99] {
+            let dbfs = AudioLevelCurve.dBFS(fromLevel: level)
+            let back = AudioLevelCurve.level(fromDBFS: dbfs)
+            XCTAssertEqual(back, level, accuracy: 0.0005, "dBFS round trip failed at \(level) (dBFS=\(dbfs))")
+        }
+    }
+
+    func testKnownDBFSValues() {
+        // The two shipping thresholds, inverted: -58.4 dBFS should give level ~0.06
+        XCTAssertEqual(AudioLevelCurve.level(fromDBFS: -58.4), 0.06, accuracy: 0.005)
+        XCTAssertEqual(AudioLevelCurve.level(fromDBFS: -54.6), 0.08, accuracy: 0.005)
+    }
+
+    func testLevelFromDBFSFloor() {
+        // Below floorDBFS, level(fromDBFS:) returns 0
+        XCTAssertEqual(AudioLevelCurve.level(fromDBFS: -200), 0)
+        XCTAssertEqual(AudioLevelCurve.level(fromDBFS: AudioLevelCurve.floorDBFS), 0, accuracy: 0.001)
+    }
+
+    func testLevelFromDBFSSaturation() {
+        // At or above 0 dBFS, the curve saturates at 1.0
+        XCTAssertEqual(AudioLevelCurve.level(fromDBFS: 0), 1.0, accuracy: 0.001)
+        XCTAssertEqual(AudioLevelCurve.level(fromDBFS: 10), 1.0, accuracy: 0.001)
+    }
 }
