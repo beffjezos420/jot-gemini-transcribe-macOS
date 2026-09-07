@@ -124,4 +124,19 @@ final class TranscriptDiffTests: XCTestCase {
         let segments = TranscriptDiff.segments(verbatim: said, cleaned: "Hello world again.")
         assertLossless(segments, said)
     }
+
+    /// Leading whitespace must also survive — joining the segments must exactly
+    /// reproduce the original text regardless of leading spacing.
+    func testLeadingWhitespaceIsPreserved() {
+        let said = "  hello world"
+        let segments = TranscriptDiff.segments(verbatim: said, cleaned: "Hello world.")
+        assertLossless(segments, said)
+    }
+
+    func testOnlyWhitespaceShowsUnedited() {
+        let segments = TranscriptDiff.segments(verbatim: "   ", cleaned: "anything")
+        XCTAssertEqual(segments.count, 1)
+        XCTAssertFalse(segments[0].isCut, "whitespace-only must render as unedited, never all-red")
+        assertLossless(segments, "   ")
+    }
 }
