@@ -147,7 +147,7 @@ public enum TranscriptDiff {
             if said[i].key == kept[j].key && !said[i].key.isEmpty {
                 flags[i] = true
                 i += 1; j += 1
-            } else if table[i + 1][j] >= table[i][j + 1] {
+            } else if table[i + 1][j] > table[i][j + 1] {
                 i += 1
             } else {
                 j += 1
