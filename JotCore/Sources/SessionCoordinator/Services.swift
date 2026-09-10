@@ -50,6 +50,20 @@ public enum TranscriptionError: Error, Equatable, Sendable {
     case timeout
     case emptyTranscript
     case safetyBlocked
+    
+    /// Whether this error represents a condition that might resolve on retry
+    /// (network blip, transient quota, temporary timeout). Permanent errors like
+    /// bad requests, auth rejections, daily-hard-quota, or unavailable models
+    /// return false.
+    public var isRetryable: Bool {
+        switch self {
+        case .offline, .network, .timeout, .rateLimitedTransient:
+            return true
+        case .badRequest, .auth, .modelUnavailable, .rateLimitedDaily,
+                .emptyTranscript, .safetyBlocked:
+            return false
+        }
+    }
 }
 
 /// Snapshot of where the user was dictating, captured at hotkey-down.
