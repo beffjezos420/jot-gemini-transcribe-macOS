@@ -164,7 +164,9 @@ public final class RetryQueue {
             return .recovered
         } catch let error as TranscriptionError {
             switch error {
-            case .offline, .network, .timeout, .rateLimitedTransient:
+            case _ where error.isRetryable:
+                // Single source of truth for "this resolves itself" lives on
+                // TranscriptionError — offline, network, timeout, transient 429.
                 return .stillOffline
             case .auth, .rateLimitedDaily:
                 // Account-level wall: NOT this row's fault. Keep its queued
